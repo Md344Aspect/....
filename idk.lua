@@ -36,15 +36,17 @@ function Library:CreateWindow(title, logoId)
 	Top.Parent = Main
 
 	local Title = Instance.new("TextLabel")
-	Title.Text = title or "UI Library"
-	Title.Font = Enum.Font.GothamBold
-	Title.TextSize = 16
-	Title.TextColor3 = Library.Theme.Text
-	Title.BackgroundTransparency = 1
-	Title.Position = UDim2.new(0, 50, 0, 0)
-	Title.Size = UDim2.new(1, -50, 1, 0)
-	Title.TextXAlignment = Left
-	Title.Parent = Top
+Title.Text = title or "UI Library"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 16
+Title.TextColor3 = Library.Theme.Text
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 50, 0, 0)
+Title.Size = UDim2.new(1, -50, 1, 0)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.TextYAlignment = Enum.TextYAlignment.Center
+Title.Parent = Top
+
 
 	if logoId then
 		local Logo = Instance.new("ImageLabel")
