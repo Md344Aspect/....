@@ -84,7 +84,7 @@ Title.Parent = Top
 	TabsBar.Parent = Main
 
 	local TabsLayout = Instance.new("UIListLayout", TabsBar)
-	TabsLayout.FillDirection = Horizontal
+	TabsLayout.FillDirection = Enum.FillDirection.Horizontal
 	TabsLayout.Padding = UDim.new(0, 6)
 	TabsLayout.HorizontalAlignment = Center
 	TabsLayout.VerticalAlignment = Center
