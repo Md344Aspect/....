@@ -4,199 +4,247 @@ local Player = Players.LocalPlayer
 
 local Library = {}
 Library.Flags = {}
-Library.Configs = {}
 
 Library.Theme = {
-	Background = Color3.fromRGB(30, 32, 45),
-	Panel = Color3.fromRGB(40, 42, 60),
-	Accent = Color3.fromRGB(90, 120, 255),
+	Background = Color3.fromRGB(24, 26, 36),
+	Panel = Color3.fromRGB(32, 35, 48),
+	Section = Color3.fromRGB(38, 41, 56),
+	Accent = Color3.fromRGB(100, 130, 255),
 	Text = Color3.fromRGB(255, 255, 255),
-	SubText = Color3.fromRGB(180, 180, 180)
+	SubText = Color3.fromRGB(170, 170, 170)
 }
 
+local function Round(obj, r)
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, r)
+	c.Parent = obj
+end
+
 function Library:CreateWindow(title, logoId)
-	local ScreenGui = Instance.new("ScreenGui")
-	ScreenGui.Name = "lib"
-	ScreenGui.Parent = Player:WaitForChild("PlayerGui")
-	ScreenGui.ResetOnSpawn = false
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "BetterUILib"
+	gui.Parent = Player:WaitForChild("PlayerGui")
+	gui.ResetOnSpawn = false
 
-	local Main = Instance.new("Frame")
-	Main.Size = UDim2.fromScale(0.55, 0.6)
-	Main.Position = UDim2.fromScale(0.225, 0.2)
-	Main.BackgroundColor3 = Library.Theme.Background
-	Main.Parent = ScreenGui
-	Main.BorderSizePixel = 0
+	local main = Instance.new("Frame")
+	main.Size = UDim2.fromScale(0.55, 0.6)
+	main.Position = UDim2.fromScale(0.225, 0.2)
+	main.BackgroundColor3 = Library.Theme.Background
+	main.Parent = gui
+	main.BorderSizePixel = 0
+	Round(main, 10)
 
-	local UICorner = Instance.new("UICorner", Main)
-	UICorner.CornerRadius = UDim.new(0, 10)
+	do
+		local dragging, dragStart, startPos
+		main.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragging = true
+				dragStart = input.Position
+				startPos = main.Position
+			end
+		end)
 
-	local Top = Instance.new("Frame")
-	Top.Size = UDim2.new(1, 0, 0, 40)
-	Top.BackgroundColor3 = Library.Theme.Panel
-	Top.Parent = Main
+		UIS.InputChanged:Connect(function(input)
+			if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+				local delta = input.Position - dragStart
+				main.Position = UDim2.new(
+					startPos.X.Scale,
+					startPos.X.Offset + delta.X,
+					startPos.Y.Scale,
+					startPos.Y.Offset + delta.Y
+				)
+			end
+		end)
 
-	local Title = Instance.new("TextLabel")
-Title.Text = title or "UI Library"
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 16
-Title.TextColor3 = Library.Theme.Text
-Title.BackgroundTransparency = 1
-Title.Position = UDim2.new(0, 50, 0, 0)
-Title.Size = UDim2.new(1, -50, 1, 0)
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.TextYAlignment = Enum.TextYAlignment.Center
-Title.Parent = Top
+		UIS.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragging = false
+			end
+		end)
+	end
 
+	local top = Instance.new("Frame")
+	top.Size = UDim2.new(1, 0, 0, 42)
+	top.BackgroundColor3 = Library.Theme.Panel
+	top.Parent = main
+
+	local titleLbl = Instance.new("TextLabel")
+	titleLbl.Text = title or "UI"
+	titleLbl.Font = Enum.Font.GothamBold
+	titleLbl.TextSize = 15
+	titleLbl.TextColor3 = Library.Theme.Text
+	titleLbl.BackgroundTransparency = 1
+	titleLbl.Position = UDim2.new(0, 46, 0, 0)
+	titleLbl.Size = UDim2.new(1, -46, 1, 0)
+	titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+	titleLbl.Parent = top
 
 	if logoId then
-		local Logo = Instance.new("ImageLabel")
-		Logo.Image = "rbxassetid://" .. logoId
-		Logo.Size = UDim2.fromOffset(28, 28)
-		Logo.Position = UDim2.fromOffset(10, 6)
-		Logo.BackgroundTransparency = 1
-		Logo.Parent = Top
+		local logo = Instance.new("ImageLabel")
+		logo.Image = "rbxassetid://" .. logoId
+		logo.Size = UDim2.fromOffset(26, 26)
+		logo.Position = UDim2.fromOffset(10, 8)
+		logo.BackgroundTransparency = 1
+		logo.Parent = top
 	end
 
-	local Left = Instance.new("Frame")
-	Left.Size = UDim2.new(0, 160, 1, -40)
-	Left.Position = UDim2.new(0, 0, 0, 40)
-	Left.BackgroundColor3 = Library.Theme.Panel
-	Left.Parent = Main
+	local left = Instance.new("Frame")
+	left.Size = UDim2.new(0, 170, 1, -42)
+	left.Position = UDim2.new(0, 0, 0, 42)
+	left.BackgroundColor3 = Library.Theme.Panel
+	left.Parent = main
 
-	local UIList = Instance.new("UIListLayout", Left)
-	UIList.Padding = UDim.new(0, 6)
+	local leftLayout = Instance.new("UIListLayout", left)
+	leftLayout.Padding = UDim.new(0, 8)
 
-	local Padding = Instance.new("UIPadding", Left)
-	Padding.PaddingTop = UDim.new(0, 10)
-	Padding.PaddingLeft = UDim.new(0, 10)
-	Padding.PaddingRight = UDim.new(0, 10)
+	local leftPad = Instance.new("UIPadding", left)
+	leftPad.PaddingTop = UDim.new(0, 10)
+	leftPad.PaddingLeft = UDim.new(0, 10)
+	leftPad.PaddingRight = UDim.new(0, 10)
 
-	local Content = Instance.new("Frame")
-	Content.Position = UDim2.new(0, 160, 0, 40)
-	Content.Size = UDim2.new(1, -160, 1, -80)
-	Content.BackgroundTransparency = 1
-	Content.Parent = Main
+	local content = Instance.new("Frame")
+	content.Position = UDim2.new(0, 170, 0, 42)
+	content.Size = UDim2.new(1, -170, 1, -82)
+	content.BackgroundTransparency = 1
+	content.Parent = main
 
-	local TabsBar = Instance.new("Frame")
-	TabsBar.Size = UDim2.new(1, 0, 0, 40)
-	TabsBar.Position = UDim2.new(0, 0, 1, -40)
-	TabsBar.BackgroundColor3 = Library.Theme.Panel
-	TabsBar.Parent = Main
+	local tabsBar = Instance.new("Frame")
+	tabsBar.Size = UDim2.new(1, 0, 0, 40)
+	tabsBar.Position = UDim2.new(0, 0, 1, -40)
+	tabsBar.BackgroundColor3 = Library.Theme.Panel
+	tabsBar.Parent = main
 
-	local TabsLayout = Instance.new("UIListLayout", TabsBar)
-	TabsLayout.FillDirection = Enum.FillDirection.Horizontal
-	TabsLayout.Padding = UDim.new(0, 6)
-	TabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	TabsLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+	local tabsLayout = Instance.new("UIListLayout", tabsBar)
+	tabsLayout.FillDirection = Enum.FillDirection.Horizontal
+	tabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	tabsLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+	tabsLayout.Padding = UDim.new(0, 6)
 
-	local Window = {}
-	Window.Tabs = {}
-
-	local function CreateLeftButton(text, callback)
-		local Btn = Instance.new("TextButton")
-		Btn.Text = text
-		Btn.Font = Enum.Font.Gotham
-		Btn.TextSize = 14
-		Btn.TextColor3 = Library.Theme.Text
-		Btn.BackgroundColor3 = Library.Theme.Background
-		Btn.Size = UDim2.new(1, 0, 0, 32)
-		Btn.Parent = Left
-
-		local C = Instance.new("UICorner", Btn)
-		C.CornerRadius = UDim.new(0, 6)
-
-		Btn.MouseButton1Click:Connect(callback)
-	end
-
-	CreateLeftButton("Save Config", function()
-		print("Config Saved (example)")
-	end)
-
-	CreateLeftButton("Load Config", function()
-		print("Config Loaded (example)")
-	end)
+	local Window = { Tabs = {} }
 
 	function Window:CreateTab(name)
 		local Tab = {}
-		local TabButton = Instance.new("TextButton")
-		TabButton.Text = name
-		TabButton.Font = Enum.Font.GothamBold
-		TabButton.TextSize = 14
-		TabButton.TextColor3 = Library.Theme.Text
-		TabButton.BackgroundColor3 = Library.Theme.Background
-		TabButton.Size = UDim2.fromOffset(110, 28)
-		TabButton.Parent = TabsBar
 
-		local TC = Instance.new("UICorner", TabButton)
-		TC.CornerRadius = UDim.new(0, 6)
+		local btn = Instance.new("TextButton")
+		btn.Text = name
+		btn.Size = UDim2.fromOffset(110, 28)
+		btn.Font = Enum.Font.GothamBold
+		btn.TextSize = 13
+		btn.TextColor3 = Library.Theme.Text
+		btn.BackgroundColor3 = Library.Theme.Background
+		btn.Parent = tabsBar
+		Round(btn, 6)
 
-		local Page = Instance.new("ScrollingFrame")
-		Page.Size = UDim2.fromScale(1, 1)
-		Page.CanvasSize = UDim2.new(0, 0, 0, 0)
-		Page.ScrollBarImageTransparency = 0.8
-		Page.Visible = false
-		Page.Parent = Content
-		Page.BackgroundTransparency = 1
+		local page = Instance.new("ScrollingFrame")
+		page.Size = UDim2.fromScale(1, 1)
+		page.CanvasSize = UDim2.new()
+		page.ScrollBarImageTransparency = 0.8
+		page.Visible = false
+		page.Parent = content
+		page.BackgroundTransparency = 1
 
-		local Layout = Instance.new("UIListLayout", Page)
-		Layout.Padding = UDim.new(0, 8)
+		local pageLayout = Instance.new("UIListLayout", page)
+		pageLayout.Padding = UDim.new(0, 10)
 
-		Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-			Page.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
+		pageLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+			page.CanvasSize = UDim2.new(0, 0, 0, pageLayout.AbsoluteContentSize.Y + 10)
 		end)
 
-		TabButton.MouseButton1Click:Connect(function()
+		btn.MouseButton1Click:Connect(function()
 			for _, t in pairs(Window.Tabs) do
 				t.Page.Visible = false
 			end
-			Page.Visible = true
+			page.Visible = true
 		end)
 
-		function Tab:AddToggle(text, flag, default)
-			Library.Flags[flag] = default or false
+		function Tab:AddSection(title)
+			local Section = {}
 
-			local Toggle = Instance.new("TextButton")
-			Toggle.Text = text
-			Toggle.Size = UDim2.new(1, -10, 0, 36)
-			Toggle.BackgroundColor3 = Library.Theme.Panel
-			Toggle.TextColor3 = Library.Theme.Text
-			Toggle.Font = Enum.Font.Gotham
-			Toggle.TextSize = 14
-			Toggle.Parent = Page
+			local frame = Instance.new("Frame")
+			frame.BackgroundColor3 = Library.Theme.Section
+			frame.Size = UDim2.new(1, -10, 0, 40)
+			frame.Parent = page
+			frame.AutomaticSize = Enum.AutomaticSize.Y
+			Round(frame, 8)
 
-			local C = Instance.new("UICorner", Toggle)
+			local pad = Instance.new("UIPadding", frame)
+			pad.PaddingTop = UDim.new(0, 10)
+			pad.PaddingBottom = UDim.new(0, 10)
+			pad.PaddingLeft = UDim.new(0, 10)
+			pad.PaddingRight = UDim.new(0, 10)
 
-			local function Update()
-				Toggle.BackgroundColor3 = Library.Flags[flag] and Library.Theme.Accent or Library.Theme.Panel
+			local layout = Instance.new("UIListLayout", frame)
+			layout.Padding = UDim.new(0, 8)
+
+			local lbl = Instance.new("TextLabel")
+			lbl.Text = title
+			lbl.Font = Enum.Font.GothamBold
+			lbl.TextSize = 14
+			lbl.TextColor3 = Library.Theme.Text
+			lbl.BackgroundTransparency = 1
+			lbl.Size = UDim2.new(1, 0, 0, 20)
+			lbl.Parent = frame
+
+			function Section:AddToggle(text, flag, default)
+				Library.Flags[flag] = default or false
+
+				local holder = Instance.new("Frame")
+				holder.Size = UDim2.new(1, 0, 0, 26)
+				holder.BackgroundTransparency = 1
+				holder.Parent = frame
+
+				local nameLbl = Instance.new("TextLabel")
+				nameLbl.Text = text
+				nameLbl.Font = Enum.Font.Gotham
+				nameLbl.TextSize = 13
+				nameLbl.TextColor3 = Library.Theme.SubText
+				nameLbl.BackgroundTransparency = 1
+				nameLbl.Size = UDim2.new(1, -40, 1, 0)
+				nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+				nameLbl.Parent = holder
+
+				local toggle = Instance.new("Frame")
+				toggle.Size = UDim2.fromOffset(34, 18)
+				toggle.Position = UDim2.new(1, -34, 0.5, -9)
+				toggle.BackgroundColor3 = Library.Theme.Background
+				toggle.Parent = holder
+				Round(toggle, 9)
+
+				local knob = Instance.new("Frame")
+				knob.Size = UDim2.fromOffset(14, 14)
+				knob.Position = UDim2.fromOffset(2, 2)
+				knob.BackgroundColor3 = Library.Theme.SubText
+				knob.Parent = toggle
+				Round(knob, 7)
+
+				local function update()
+					if Library.Flags[flag] then
+						toggle.BackgroundColor3 = Library.Theme.Accent
+						knob.Position = UDim2.fromOffset(18, 2)
+					else
+						toggle.BackgroundColor3 = Library.Theme.Background
+						knob.Position = UDim2.fromOffset(2, 2)
+					end
+				end
+
+				holder.InputBegan:Connect(function(i)
+					if i.UserInputType == Enum.UserInputType.MouseButton1 then
+						Library.Flags[flag] = not Library.Flags[flag]
+						update()
+					end
+				end)
+
+				update()
 			end
 
-			Toggle.MouseButton1Click:Connect(function()
-				Library.Flags[flag] = not Library.Flags[flag]
-				Update()
-			end)
-
-			Update()
+			return Section
 		end
 
-		function Tab:AddButton(text, callback)
-			local Btn = Instance.new("TextButton")
-			Btn.Text = text
-			Btn.Size = UDim2.new(1, -10, 0, 36)
-			Btn.BackgroundColor3 = Library.Theme.Panel
-			Btn.TextColor3 = Library.Theme.Text
-			Btn.Font = Enum.Font.Gotham
-			Btn.TextSize = 14
-			Btn.Parent = Page
-
-			local C = Instance.new("UICorner", Btn)
-			Btn.MouseButton1Click:Connect(callback)
-		end
-
-		Tab.Page = Page
+		Tab.Page = page
 		table.insert(Window.Tabs, Tab)
 
 		if #Window.Tabs == 1 then
-			Page.Visible = true
+			page.Visible = true
 		end
 
 		return Tab
